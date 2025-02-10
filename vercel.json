@@ -1,0 +1,13 @@
+{
+  "version": 2,
+  "buildCommand": "npm run build",
+  "installCommand": "npm install --legacy-peer-deps",
+  "framework": "nextjs",
+  "env": {
+    "NEXT_PUBLIC_DENTAL_RECORDS_ADDRESS_SEPOLIA": "0xd511b7f16f54a129ee7906a9cf382f8b61177e52",
+    "NEXT_PUBLIC_ENABLE_TESTNETS": "true",
+    "NEXT_PUBLIC_WALLET_CONNECT_PROJECT_ID": "be66a136ce87be9854966777d7b76701",
+    "NEXT_PUBLIC_ALCHEMY_RPC_URL": "https://eth-sepolia.g.alchemy.com/v2/lC-fuHJ-mD_LmeCut0IzjrZWOg7Ph-J2",
+    "NODE_VERSION": "20.x"
+  }
+} 
