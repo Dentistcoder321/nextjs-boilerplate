@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { createPublicClient, http } from 'viem';
 import { mainnet, sepolia } from 'wagmi/chains';
-import DentalRecordsABI from '../../../../../../abi/DentalRecords.json';
+import DentalRecordsABI from '../../../../../abi/DentalRecords.json';
 
 const contractAddress = process.env.NEXT_PUBLIC_DENTAL_RECORDS_ADDRESS_SEPOLIA;
 const alchemyRpcUrl = process.env.NEXT_PUBLIC_ALCHEMY_RPC_URL;
@@ -20,7 +20,7 @@ const client = createPublicClient({
 
 export async function GET(
   request: Request,
-  { params }: { params: { address: string; index: string } }
+  { params }: { params: { address: string } }
 ) {
   if (!contractAddress) {
     return NextResponse.json(
@@ -33,15 +33,15 @@ export async function GET(
     const data = await client.readContract({
       address: contractAddress as `0x${string}`,
       abi: DentalRecordsABI,
-      functionName: 'getDentistRecordByIndex',
-      args: [params.address, Number(params.index)],
+      functionName: 'getPatientRecordCount',
+      args: [params.address],
     });
 
-    return NextResponse.json(data);
+    return NextResponse.json({ count: Number(data) });
   } catch (error) {
-    console.error('Error fetching record:', error);
+    console.error('Error fetching patient record count:', error);
     return NextResponse.json(
-      { error: 'Failed to fetch record' },
+      { error: 'Failed to fetch patient record count' },
       { status: 500 }
     );
   }

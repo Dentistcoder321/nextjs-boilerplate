@@ -33,15 +33,15 @@ export async function GET(
     const data = await client.readContract({
       address: contractAddress as `0x${string}`,
       abi: DentalRecordsABI,
-      functionName: 'getDentistRecordByIndex',
+      functionName: 'getPatientRecordByIndex',
       args: [params.address, Number(params.index)],
     });
 
     return NextResponse.json(data);
   } catch (error) {
-    console.error('Error fetching record:', error);
+    console.error('Error fetching patient record:', error);
     return NextResponse.json(
-      { error: 'Failed to fetch record' },
+      { error: 'Failed to fetch patient record' },
       { status: 500 }
     );
   }

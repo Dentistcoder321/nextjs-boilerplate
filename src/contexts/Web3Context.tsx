@@ -32,6 +32,14 @@ interface Web3ContextType {
     diagnosis: string;
     timestamp: number;
   }>;
+  getPatientRecordCount: (patientAddress: string) => Promise<number>;
+  getPatientRecordByIndex: (patientAddress: string, index: number) => Promise<{
+    dentist: string;
+    procedure: string;
+    description: string;
+    diagnosis: string;
+    timestamp: number;
+  }>;
 }
 
 const Web3Context = createContext<Web3ContextType>({
@@ -47,12 +55,20 @@ const Web3Context = createContext<Web3ContextType>({
     diagnosis: '',
     timestamp: 0,
   }),
+  getPatientRecordCount: async () => 0,
+  getPatientRecordByIndex: async () => ({
+    dentist: '',
+    procedure: '',
+    description: '',
+    diagnosis: '',
+    timestamp: 0,
+  }),
 });
 
-const contractAddress = process.env.NEXT_PUBLIC_CONTRACT_ADDRESS;
+const contractAddress = process.env.NEXT_PUBLIC_DENTAL_RECORDS_ADDRESS_SEPOLIA;
 
 if (!contractAddress) {
-  throw new Error('Contract address not found');
+  console.warn('Contract address not found in environment variables. Please check your .env.local file.');
 }
 
 export function Web3Provider({ children }: { children: React.ReactNode }) {
@@ -131,6 +147,40 @@ export function Web3Provider({ children }: { children: React.ReactNode }) {
     }
   };
 
+  const getPatientRecordCount = async (patientAddress: string): Promise<number> => {
+    try {
+      const response = await fetch(`/api/patient/${patientAddress}/record-count`);
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      const data = await response.json();
+      return Number(data.count);
+    } catch (error) {
+      console.error('Error fetching patient record count:', error);
+      throw error;
+    }
+  };
+
+  const getPatientRecordByIndex = async (patientAddress: string, index: number) => {
+    try {
+      const response = await fetch(`/api/patient/${patientAddress}/records/${index}`);
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      const data = await response.json();
+      return {
+        dentist: data[0],
+        procedure: data[1],
+        description: data[2],
+        diagnosis: data[3],
+        timestamp: Number(data[4])
+      };
+    } catch (error) {
+      console.error('Error fetching patient record:', error);
+      throw error;
+    }
+  };
+
   return (
     <Web3Context.Provider
       value={{
@@ -140,6 +190,8 @@ export function Web3Provider({ children }: { children: React.ReactNode }) {
         getDentistInfo,
         getDentistRecordCount,
         getDentistRecordByIndex,
+        getPatientRecordCount,
+        getPatientRecordByIndex,
       }}
     >
       {children}
